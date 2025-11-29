@@ -1,0 +1,15 @@
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\bin\Debug\net9.0\GameServer.exe
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\bin\Debug\net9.0\GameServer.deps.json
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\bin\Debug\net9.0\GameServer.runtimeconfig.json
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\bin\Debug\net9.0\GameServer.dll
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\bin\Debug\net9.0\GameServer.pdb
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\GameServer.GeneratedMSBuildEditorConfig.editorconfig
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\GameServer.AssemblyInfoInputs.cache
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\GameServer.AssemblyInfo.cs
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\GameServer.csproj.CoreCompileInputs.cache
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\GameServer.sourcelink.json
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\GameServer.dll
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\refint\GameServer.dll
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\GameServer.pdb
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\GameServer.genruntimeconfig.cache
+D:\Unity Projects\Unity-Dedicated-Multiplayer\GameServer\obj\Debug\net9.0\ref\GameServer.dll
