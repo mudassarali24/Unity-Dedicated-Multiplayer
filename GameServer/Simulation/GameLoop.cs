@@ -37,7 +37,7 @@ namespace GameServer.Simulation
             foreach (var kv in TcpServer.players)
             {
                 var player = kv.Value;
-                string msg = $"UPD:{player.x}:{player.y}:{player.z}";
+                string msg = $"UPD:{player.Id}:{player.x}:{player.y}:{player.z}";
                 TcpServer.Broadcast(msg);
             }
         }
