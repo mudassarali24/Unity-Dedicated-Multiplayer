@@ -2,14 +2,12 @@ using UnityEngine;
 
 public class LocalPlayer : MonoBehaviour
 {
+    public bool isLocalPlayer { get; set; }
     public float speed = 5f;
 
-    void Start()
-    {
-        TcpClientManager.Instance.Connect("127.0.0.1", 7777);
-    }
     void Update()
     {
+        if (!isLocalPlayer) return;
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 

@@ -9,10 +9,13 @@ namespace GameServer.Networking
         public float x;
         public float y;
         public float z;
-        public Player(int id, TcpClient _client)
+        public Player(int id, TcpClient _client, float x, float y, float z)
         {
             Id = id;
             client = _client;
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
     }
 }

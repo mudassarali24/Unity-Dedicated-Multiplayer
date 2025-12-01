@@ -13,6 +13,7 @@ namespace GameServer.Networking
         private Thread listenerThread;
         public ConcurrentDictionary<int, Player> players = new ConcurrentDictionary<int, Player>();
         private int playerCounter = 0;
+        private Random rng = new Random();
 
         public void Start(int port)
         {
@@ -30,9 +31,15 @@ namespace GameServer.Networking
             {
                 var client = listener.AcceptTcpClient();
                 int id = ++playerCounter;
+                var spawnPos = GetRandomSpawnPos();
+                var data = new Player(id, client, spawnPos.x, spawnPos.y, spawnPos.z);
 
-                players.TryAdd(id, new Player(id, client));
+                players.TryAdd(id, data);
                 Console.WriteLine($"(TCP) Player {id} connected!");
+                AssignIDToPlayer(id);
+                BroadcastSpawn(id, spawnPos.x, spawnPos.y, spawnPos.z);
+                // Send existing players to this new connected player
+                SendExistingPlayersTo(id);
 
                 Thread clientThread = new Thread(() => HandleClient(id, client));
                 clientThread.Start();
@@ -92,7 +99,8 @@ namespace GameServer.Networking
             }
         }
 
-        
+
+        #region BROADCASTING
         /// <summary>
         /// Broadcast a message to all players
         /// </summary>
@@ -111,5 +119,59 @@ namespace GameServer.Networking
                 catch { }
             }
         }
+
+        /// <summary>
+        /// Broadcasts message to a specific client
+        /// </summary>
+        /// <param name="pID"></param>
+        public void BroadcastToClient(int pID, string message)
+        {
+            if (players.TryGetValue(pID, out var player))
+            {
+                byte[] data = System.Text.Encoding.UTF8.GetBytes(message + "\n");
+                try { player.client.GetStream().Write(data, 0, data.Length); }
+                catch { }
+            }
+        }
+
+        /// <summary>
+        /// Broadcast spawn alert to everyone
+        /// </summary>
+        public void BroadcastSpawn(int id, float x, float y, float z)
+        {
+            string msg = $"SPAWN:{id}:{x}:{y}:{z}";
+            Broadcast(msg);
+        }
+        #endregion
+
+        #region UTILS
+
+        private void AssignIDToPlayer(int newPID)
+        {
+            if (players.TryGetValue(newPID, out var player))
+            {
+                string msg = $"ASSIGN_ID:{newPID}";
+                BroadcastToClient(newPID, msg);
+            }
+        }
+        private (float x, float y, float z) GetRandomSpawnPos()
+        {
+            float x = (float)(rng.NextDouble() * 20 - 10);
+            float z = (float)(rng.NextDouble() * 20 - 10);
+            float y = 0f;
+
+            return (x, y, z);
+        }
+
+        private void SendExistingPlayersTo(int newPID)
+        {
+            foreach (var player in players.Values)
+            {
+                string msg = $"SPAWN:{player.Id}:{player.x}:{player.y}:{player.z}";
+                BroadcastToClient(newPID, msg);
+            }
+        }
+
+        #endregion
     }
 }
