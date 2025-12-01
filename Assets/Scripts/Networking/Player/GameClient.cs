@@ -9,6 +9,7 @@ public class GameClient : MonoBehaviour
 
     public int playerID { get; private set; }
     public Dictionary<int, GameObject> players = new Dictionary<int, GameObject>();
+    public Dictionary<int, LocalPlayer> localPlayers = new Dictionary<int, LocalPlayer>();
     public static GameClient Instance;
 
     void Awake()
@@ -26,13 +27,16 @@ public class GameClient : MonoBehaviour
         playerID = pID;
     }
 
-    public void OnPlayerSpawn(int id, Vector3 pos)
+    public void OnPlayerSpawn(int id, Vector3 pos, Vector3 rot)
     {
         if (players.ContainsKey(id)) return;
         GameObject objectToSpawn = (id == playerID) ? localPlayerObj : remotePlayerObj;
-        GameObject obj = Instantiate(objectToSpawn, pos, Quaternion.identity);
+        GameObject obj = Instantiate(objectToSpawn, pos, Quaternion.Euler(rot));
+        LocalPlayer localPlayer = obj.GetComponent<LocalPlayer>();
         players.Add(id, obj);
-        obj.GetComponent<LocalPlayer>().isLocalPlayer = (id == playerID);
+        localPlayers.Add(id, localPlayer);
+        localPlayer.isLocalPlayer = (id == playerID);
+        localPlayer.localID = id;
 
         if (id == playerID)
             Debug.Log("Spawned local player!");
@@ -40,9 +44,14 @@ public class GameClient : MonoBehaviour
             Debug.Log("Spawned remote player " + id);
     }
 
-    public void OnPlayerMove(int id, Vector3 pos)
+    public void OnPlayerMove(int id, Vector3 pos, Vector3 rot)
     {
         if (!players.ContainsKey(id)) return;
+        // Ignore self-positions
+        if (GameManager.Instance.localPlayer == null) return;
+        if (GameManager.Instance.localPlayer != null &&
+            GameManager.Instance.localPlayer.localID == id) return;
         players[id].transform.position = pos;
+        players[id].transform.rotation = Quaternion.Euler(rot);
     }
 }

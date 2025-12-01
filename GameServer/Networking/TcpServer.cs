@@ -32,12 +32,14 @@ namespace GameServer.Networking
                 var client = listener.AcceptTcpClient();
                 int id = ++playerCounter;
                 var spawnPos = GetRandomSpawnPos();
-                var data = new Player(id, client, spawnPos.x, spawnPos.y, spawnPos.z);
+                Position pos = new Position(spawnPos.x, spawnPos.y, spawnPos.z);
+                Rotation rot = new Rotation(0, 0, 0);
+                var data = new Player(id, client, pos, rot);
 
                 players.TryAdd(id, data);
                 Console.WriteLine($"(TCP) Player {id} connected!");
                 AssignIDToPlayer(id);
-                BroadcastSpawn(id, spawnPos.x, spawnPos.y, spawnPos.z);
+                BroadcastSpawn(id, pos, rot);
                 // Send existing players to this new connected player
                 SendExistingPlayersTo(id);
 
@@ -71,22 +73,15 @@ namespace GameServer.Networking
 
         private void HandleMessage(int id, string message)
         {
-            if (message.StartsWith("POS:"))
+            string[] parts = message.Split(':');
+            switch (parts[0])
             {
-                // Example: POS:12.4:-5.6:3.2
-                var parts = message.Substring(4).Split(':');
-                if (parts.Length == 3 &&
-                    float.TryParse(parts[0], out float x) &&
-                    float.TryParse(parts[1], out float y) &&
-                    float.TryParse(parts[2], out float z))
-                {
-                    if (players.TryGetValue(id, out Player player))
-                    {
-                        player.x = x;
-                        player.y = y;
-                        player.z = z;
-                    }
-                }
+                case "POS":
+                    HandlePosition(id, parts);
+                    break;
+                case "ROT":
+                    HandleRotation(id, parts);
+                    break;
             }
         }
 
@@ -98,7 +93,6 @@ namespace GameServer.Networking
                 Console.WriteLine($"(TCP) Player {id} disconnected!");
             }
         }
-
 
         #region BROADCASTING
         /// <summary>
@@ -137,11 +131,55 @@ namespace GameServer.Networking
         /// <summary>
         /// Broadcast spawn alert to everyone
         /// </summary>
-        public void BroadcastSpawn(int id, float x, float y, float z)
+        public void BroadcastSpawn(int id, Position pos, Rotation rot)
         {
-            string msg = $"SPAWN:{id}:{x}:{y}:{z}";
+            string msg = $"SPAWN:{id}:{pos.x}:{pos.y}:{pos.z}:{rot.x}:{rot.y}:{rot.z}";
             Broadcast(msg);
         }
+        #endregion
+
+
+
+        #region MESSAGE_HANDLERS
+
+        private void HandlePosition(int id, string[] parts)
+        {
+            if (parts[0] != "POS") return;
+
+            // Example: POS:12.4:-5.6:3.2
+            if (parts.Length == 3 &&
+                float.TryParse(parts[1], out float x) &&
+                float.TryParse(parts[2], out float y) &&
+                float.TryParse(parts[3], out float z))
+            {
+                if (players.TryGetValue(id, out Player player))
+                {
+                    player.pos.x = x;
+                    player.pos.x = y;
+                    player.pos.x = z;
+                }
+            }
+        }
+
+        private void HandleRotation(int id, string[] parts)
+        {
+            if (parts[0] != "ROT") return;
+
+            // Example: ROT:12.4:-5.6:3.2
+            if (parts.Length == 3 &&
+                float.TryParse(parts[1], out float x) &&
+                float.TryParse(parts[2], out float y) &&
+                float.TryParse(parts[3], out float z))
+            {
+                if (players.TryGetValue(id, out Player player))
+                {
+                    player.rot.x = x;
+                    player.rot.y = y;
+                    player.rot.z = z;
+                }
+            }
+        }
+
         #endregion
 
         #region UTILS
@@ -167,7 +205,7 @@ namespace GameServer.Networking
         {
             foreach (var player in players.Values)
             {
-                string msg = $"SPAWN:{player.Id}:{player.x}:{player.y}:{player.z}";
+                string msg = $"SPAWN:{player.Id}:{player.pos.x}:{player.pos.y}:{player.pos.z}:{player.rot.x}:{player.rot.y}:{player.rot.z}";
                 BroadcastToClient(newPID, msg);
             }
         }
