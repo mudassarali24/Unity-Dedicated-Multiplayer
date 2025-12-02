@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using UnityEngine;
 
 public class GameClient : MonoBehaviour
@@ -19,7 +21,7 @@ public class GameClient : MonoBehaviour
 
     void Start()
     {
-        TcpClientManager.Instance.Connect("127.0.0.1", 7777);
+        TcpClientManager.Instance.Connect("192.168.100.186", 7777);
     }
 
     public void AssignID(int pID)
@@ -47,11 +49,11 @@ public class GameClient : MonoBehaviour
     public void OnPlayerMove(int id, Vector3 pos, Vector3 rot)
     {
         if (!players.ContainsKey(id)) return;
-        // Ignore self-positions
+        // Ignore local movement
         if (GameManager.Instance.localPlayer == null) return;
         if (GameManager.Instance.localPlayer != null &&
             GameManager.Instance.localPlayer.localID == id) return;
-        players[id].transform.position = pos;
-        players[id].transform.rotation = Quaternion.Euler(rot);
+        NetworkTransform nt = players[id].GetComponent<NetworkTransform>();
+        nt.SetTarget(pos, Quaternion.Euler(rot));
     }
 }

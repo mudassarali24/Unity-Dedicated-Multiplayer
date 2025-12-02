@@ -13,6 +13,8 @@ public class TopDownCharacterController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         localPlayer = GetComponent<LocalPlayer>();
         playerCamera = Camera.main;
+        rb.isKinematic = !localPlayer.isLocalPlayer;
+        rb.useGravity = localPlayer.isLocalPlayer;
     }
     void Update()
     {
@@ -26,7 +28,13 @@ public class TopDownCharacterController : MonoBehaviour
     private void FixedUpdate()
     {
         if (!localPlayer.isLocalPlayer) return;
-        rb.MovePosition(rb.position + moveInput * moveSpeed * Time.fixedDeltaTime);
+        Vector3 forward = transform.forward;
+        Vector3 right = transform.right;
+
+        Vector3 moveDir = (forward * moveInput.z + right * moveInput.x).normalized;
+
+        Vector3 newPos = rb.position + moveDir * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(newPos);
     }
     private void RotateTowardsMouse()
     {

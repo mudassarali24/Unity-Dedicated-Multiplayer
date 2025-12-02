@@ -147,16 +147,15 @@ namespace GameServer.Networking
             if (parts[0] != "POS") return;
 
             // Example: POS:12.4:-5.6:3.2
-            if (parts.Length == 3 &&
-                float.TryParse(parts[1], out float x) &&
+            if (float.TryParse(parts[1], out float x) &&
                 float.TryParse(parts[2], out float y) &&
                 float.TryParse(parts[3], out float z))
             {
                 if (players.TryGetValue(id, out Player player))
                 {
                     player.pos.x = x;
-                    player.pos.x = y;
-                    player.pos.x = z;
+                    player.pos.y = y;
+                    player.pos.z = z;
                 }
             }
         }
@@ -166,8 +165,7 @@ namespace GameServer.Networking
             if (parts[0] != "ROT") return;
 
             // Example: ROT:12.4:-5.6:3.2
-            if (parts.Length == 3 &&
-                float.TryParse(parts[1], out float x) &&
+            if (float.TryParse(parts[1], out float x) &&
                 float.TryParse(parts[2], out float y) &&
                 float.TryParse(parts[3], out float z))
             {

@@ -1777,6 +1777,7 @@ GameObject:
   - component: {fileID: 4441418370688274282}
   - component: {fileID: 3871978173527561580}
   - component: {fileID: 7942745723697695332}
+  - component: {fileID: -8099071882920058239}
   m_Layer: 0
   m_Name: ClownPlayer 1
   m_TagString: Untagged
@@ -1885,6 +1886,20 @@ CapsuleCollider:
   m_Height: 2.016798
   m_Direction: 1
   m_Center: {x: 0, y: 0.9776578, z: 0.00909847}
+--- !u!114 &-8099071882920058239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4365629155975722056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ff386e214509e642979063232ef2a29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 10
+  rotSpeed: 12
 --- !u!1 &4575696854177318463
 GameObject:
   m_ObjectHideFlags: 0

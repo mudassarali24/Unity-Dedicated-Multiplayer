@@ -25,7 +25,7 @@ public class LocalPlayer : MonoBehaviour
     {
         if (!isLocalPlayer) return;
         UpdatePosition(transform.position);
-        UpdateRotation(transform.rotation.eulerAngles);
+        UpdateRotation(transform.rotation.eulerAngles.y);
     }
 
     public void UpdatePosition(Vector3 position)
@@ -33,9 +33,9 @@ public class LocalPlayer : MonoBehaviour
         TcpClientManager.Instance.Send(
             $"POS:{position.x}:{position.y}:{position.z}");
     }
-    public void UpdateRotation(Vector3 rotation)
+    public void UpdateRotation(float rotationY)
     {
         TcpClientManager.Instance.Send(
-            $"ROT:{rotation.x}:{rotation.y}:{rotation.z}");
+            $"ROT:{0f}:{rotationY}:{0f}");
     }
 }
