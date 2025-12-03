@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Collections.Concurrent;
 using GameServer.Simulation;
+using GameServer.Utils;
 
 namespace GameServer.Networking
 {
@@ -32,8 +33,8 @@ namespace GameServer.Networking
                 var client = listener.AcceptTcpClient();
                 int id = ++playerCounter;
                 var spawnPos = GetRandomSpawnPos();
-                Position pos = new Position(spawnPos.x, spawnPos.y, spawnPos.z);
-                Rotation rot = new Rotation(0, 0, 0);
+                Vector3 pos = new Vector3(spawnPos.x, spawnPos.y, spawnPos.z);
+                Vector3 rot = new Vector3(0, 0, 0);
                 var data = new Player(id, client, pos, rot);
 
                 players.TryAdd(id, data);
@@ -81,6 +82,12 @@ namespace GameServer.Networking
                     break;
                 case "ROT":
                     HandleRotation(id, parts);
+                    break;
+                case "ANIM":
+                    HandleAnimation(id, parts);
+                    break;
+                case "SHOOT":
+                    HandleShoot(id, parts);
                     break;
             }
         }
@@ -131,7 +138,7 @@ namespace GameServer.Networking
         /// <summary>
         /// Broadcast spawn alert to everyone
         /// </summary>
-        public void BroadcastSpawn(int id, Position pos, Rotation rot)
+        public void BroadcastSpawn(int id, Vector3 pos, Vector3 rot)
         {
             string msg = $"SPAWN:{id}:{pos.x}:{pos.y}:{pos.z}:{rot.x}:{rot.y}:{rot.z}";
             Broadcast(msg);
@@ -146,16 +153,16 @@ namespace GameServer.Networking
         {
             if (parts[0] != "POS") return;
 
+            Vector3 pos = new Vector3();
+
             // Example: POS:12.4:-5.6:3.2
-            if (float.TryParse(parts[1], out float x) &&
-                float.TryParse(parts[2], out float y) &&
-                float.TryParse(parts[3], out float z))
+            if (float.TryParse(parts[1], out pos.x) &&
+                float.TryParse(parts[2], out pos.y) &&
+                float.TryParse(parts[3], out pos.z))
             {
                 if (players.TryGetValue(id, out Player player))
                 {
-                    player.pos.x = x;
-                    player.pos.y = y;
-                    player.pos.z = z;
+                    player.pos = pos;
                 }
             }
         }
@@ -164,18 +171,57 @@ namespace GameServer.Networking
         {
             if (parts[0] != "ROT") return;
 
+            Vector3 rot = new Vector3();
             // Example: ROT:12.4:-5.6:3.2
-            if (float.TryParse(parts[1], out float x) &&
-                float.TryParse(parts[2], out float y) &&
-                float.TryParse(parts[3], out float z))
+            if (float.TryParse(parts[1], out rot.x) &&
+                float.TryParse(parts[2], out rot.y) &&
+                float.TryParse(parts[3], out rot.z))
             {
                 if (players.TryGetValue(id, out Player player))
                 {
-                    player.rot.x = x;
-                    player.rot.y = y;
-                    player.rot.z = z;
+                    player.rot = rot;
                 }
             }
+        }
+        private void HandleAnimation(int id, string[] parts)
+        {
+            if (parts[0] != "ANIM") return;
+
+            // Example: ANIM:State:2.0
+            if (!string.IsNullOrEmpty(parts[1]) &&
+                float.TryParse(parts[2], out float val))
+            {
+                string param = parts[1];
+                if (players.TryGetValue(id, out Player player))
+                {
+                    player.animations[param] = val;
+                }
+            }
+        }
+
+        public void HandleShoot(int id, string[] parts)
+        {
+            if (parts[0] != "SHOOT") return;
+
+            Vector3 shootPoint = new Vector3();
+            Vector3 hitPoint = new Vector3();
+
+            string[] shootPointParts = parts[1].Split(',');
+            string[] hitPointParts = parts[2].Split(',');
+
+            // Example: SHOOT:-6.02,-0.51,5.98:-3.88,-1.85,4.77:-1
+            if (float.TryParse(shootPointParts[0], out shootPoint.x)
+                && float.TryParse(shootPointParts[1], out shootPoint.y)
+                && float.TryParse(shootPointParts[2], out shootPoint.z)
+                && float.TryParse(hitPointParts[0], out hitPoint.x)
+                && float.TryParse(hitPointParts[1], out hitPoint.y)
+                && float.TryParse(hitPointParts[2], out hitPoint.z)
+                && int.TryParse(parts[3], out int targetId))
+            {
+                string msg = $"UPD_SHOOT:{id}:{shootPoint.x},{shootPoint.y},{shootPoint.z}:{hitPoint.x},{hitPoint.y},{hitPoint.z}:{targetId}";
+                Broadcast(msg);
+            }
+
         }
 
         #endregion

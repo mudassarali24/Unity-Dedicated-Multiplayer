@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using GameServer.Networking;
+using GameServer.Utils;
 
 namespace GameServer.Simulation
 {
@@ -32,16 +33,43 @@ namespace GameServer.Simulation
         private void Tick()
         {
             // Game logic here
-            
-            // Broadcast all player positions
-            foreach (var kv in TcpServer.players)
-            {
-                var player = kv.Value;
-                string msg = $"UPD:{player.Id}:{player.pos.x}:{player.pos.y}:{player.pos.z}:{player.rot.x}:{player.rot.y}:{player.rot.z}";
-                TcpServer.Broadcast(msg);
-            }
+
+            BroadcastPositions();
+            BroadcastAnimations();
         }
 
         public void Stop() => isRunning = false;
+
+        #region BROADCASTING
+
+        /// <summary>
+        /// Broadcast all player positions
+        /// </summary>
+        private void BroadcastPositions()
+        {
+            foreach (var kv in TcpServer.players)
+            {
+                var player = kv.Value;
+                string msg = $"UPD_POS:{player.Id}:{player.pos.x}:{player.pos.y}:{player.pos.z}:{player.rot.x}:{player.rot.y}:{player.rot.z}";
+                TcpServer.Broadcast(msg);
+            }
+        }
+        /// <summary>
+        /// Broadcast all player positions
+        /// </summary>
+        private void BroadcastAnimations()
+        {
+            foreach (var kv in TcpServer.players)
+            {
+                var player = kv.Value;
+                foreach (var akv in player.animations)
+                {
+                    string msg = $"UPD_ANIM:{player.Id}:{akv.Key}:{akv.Value}";
+                    TcpServer.Broadcast(msg);
+                }
+            }
+        }
+
+        #endregion
     }
 }

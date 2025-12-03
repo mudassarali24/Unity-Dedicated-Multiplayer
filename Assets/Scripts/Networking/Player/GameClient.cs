@@ -56,4 +56,27 @@ public class GameClient : MonoBehaviour
         NetworkTransform nt = players[id].GetComponent<NetworkTransform>();
         nt.SetTarget(pos, Quaternion.Euler(rot));
     }
+
+    public void OnPlayerAnimate(int id, string paramName, float val)
+    {
+        if (!players.ContainsKey(id)) return;
+        // Ignore local movement
+        if (GameManager.Instance.localPlayer == null) return;
+        if (GameManager.Instance.localPlayer != null &&
+            GameManager.Instance.localPlayer.localID == id) return;
+        localPlayers[id].characterController.UpdateAnimators(paramName, val);
+    }
+
+    public void OnPlayerShoot(int id, Vector3 shootPt, Vector3 hitPt, int targetId)
+    {
+        if (!players.ContainsKey(id)) return;
+        // Ignore local movement
+        if (GameManager.Instance.localPlayer == null) return;
+        if (GameManager.Instance.localPlayer != null &&
+            GameManager.Instance.localPlayer.localID == id) return;
+
+        // Show effects at correct positions
+        EffectsManager.Instance.SpawnMuzzleFlash(shootPt, Quaternion.identity);
+        EffectsManager.Instance.SpawnHitImpact(hitPt);
+    }
 }

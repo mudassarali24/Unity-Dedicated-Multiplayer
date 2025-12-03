@@ -1,44 +1,22 @@
 using System.Net.Sockets;
+using GameServer.Utils;
 
 namespace GameServer.Networking
 {
-    public struct Position
-    {
-        public float x;
-        public float y;
-        public float z;      
-        public Position(float x, float y, float z)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-    }
-    public struct Rotation
-    {
-        public float x;
-        public float y;
-        public float z;
-
-        public Rotation(float x, float y, float z)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-    }
     public class Player
     {
         public int Id { get; private set; }
         public TcpClient client { get; private set; }
-        public Position pos;
-        public Rotation rot;
-        public Player(int id, TcpClient _client, Position pos, Rotation rot)
+        public Vector3 pos;
+        public Vector3 rot;
+        public Dictionary<string, float> animations;
+        public Player(int id, TcpClient _client, Vector3 pos, Vector3 rot)
         {
             Id = id;
             client = _client;
             this.pos = pos;
             this.rot = rot;
+            animations = new Dictionary<string, float>();
         }
     }
 }

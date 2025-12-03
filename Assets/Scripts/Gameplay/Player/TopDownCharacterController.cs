@@ -5,6 +5,7 @@ public class TopDownCharacterController : MonoBehaviour
     public float moveSpeed = 6f;
     public Camera playerCamera;
     public LayerMask groundLayer;
+    public Animator[] animators;
     private LocalPlayer localPlayer;
     private Rigidbody rb;
     private Vector3 moveInput;
@@ -15,6 +16,7 @@ public class TopDownCharacterController : MonoBehaviour
         playerCamera = Camera.main;
         rb.isKinematic = !localPlayer.isLocalPlayer;
         rb.useGravity = localPlayer.isLocalPlayer;
+        UpdateAnimators("State", 0);
     }
     void Update()
     {
@@ -23,6 +25,8 @@ public class TopDownCharacterController : MonoBehaviour
         float v = Input.GetAxis("Vertical");
         moveInput = new Vector3(h, 0f, v).normalized;
 
+        UpdateAnimators("Vert", v);
+        UpdateAnimators("Hor", h);
         RotateTowardsMouse();
     }
     private void FixedUpdate()
@@ -52,5 +56,14 @@ public class TopDownCharacterController : MonoBehaviour
                 rb.MoveRotation(targetRot);
             }
         }
+    }
+
+    public void UpdateAnimators(string paramName, float val)
+    {
+        foreach (Animator anim in animators)
+        {
+            anim.SetFloat(paramName, val);
+        }
+        localPlayer.UpdateAnimation(paramName, val);
     }
 }
