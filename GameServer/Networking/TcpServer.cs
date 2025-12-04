@@ -204,21 +204,27 @@ namespace GameServer.Networking
             if (parts[0] != "SHOOT") return;
 
             Vector3 shootPoint = new Vector3();
+            Quaternion shootPtRot = new Quaternion();
             Vector3 hitPoint = new Vector3();
 
+            // Example: SHOOT:X,Y,Z:X,Y,Z,W:X,Y,Z:-1
             string[] shootPointParts = parts[1].Split(',');
-            string[] hitPointParts = parts[2].Split(',');
+            string[] shootPtRotParts = parts[2].Split(',');
+            string[] hitPointParts = parts[3].Split(',');
 
-            // Example: SHOOT:-6.02,-0.51,5.98:-3.88,-1.85,4.77:-1
-            if (float.TryParse(shootPointParts[0], out shootPoint.x)
+            if (float.TryParse(shootPointParts[0], out shootPoint.x) // Shoot Point Pos
                 && float.TryParse(shootPointParts[1], out shootPoint.y)
                 && float.TryParse(shootPointParts[2], out shootPoint.z)
-                && float.TryParse(hitPointParts[0], out hitPoint.x)
+                && float.TryParse(shootPtRotParts[0], out shootPtRot.x) // Shoot Point Rot
+                && float.TryParse(shootPtRotParts[1], out shootPtRot.y)
+                && float.TryParse(shootPtRotParts[2], out shootPtRot.z)
+                && float.TryParse(shootPtRotParts[3], out shootPtRot.w)
+                && float.TryParse(hitPointParts[0], out hitPoint.x) // Hit Point pos
                 && float.TryParse(hitPointParts[1], out hitPoint.y)
                 && float.TryParse(hitPointParts[2], out hitPoint.z)
-                && int.TryParse(parts[3], out int targetId))
+                && int.TryParse(parts[4], out int targetId))
             {
-                string msg = $"UPD_SHOOT:{id}:{shootPoint.x},{shootPoint.y},{shootPoint.z}:{hitPoint.x},{hitPoint.y},{hitPoint.z}:{targetId}";
+                string msg = $"UPD_SHOOT:{id}:{shootPoint.x},{shootPoint.y},{shootPoint.z}:{shootPtRot.x},{shootPtRot.y},{shootPtRot.z},{shootPtRot.w}:{hitPoint.x},{hitPoint.y},{hitPoint.z}:{targetId}";
                 Broadcast(msg);
             }
 

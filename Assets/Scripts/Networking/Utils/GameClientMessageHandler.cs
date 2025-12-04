@@ -90,14 +90,18 @@ public static class GameClientMessageHandler
         if (parts[0] != "UPD_SHOOT") return;
         int id = int.Parse(parts[1]);
 
+        // Example: SHOOT:ID:X,Y,Z:X,Y,Z,W:X,Y,Z:-1
+
         string[] shootPtParts = parts[2].Split(',');
-        string[] hitPtParts = parts[3].Split(',');
-        int targetId = int.Parse(parts[4]);
+        string[] shootPtRotParts = parts[3].Split(',');
+        string[] hitPtParts = parts[4].Split(',');
+        int targetId = int.Parse(parts[5]);
 
         Vector3 shootPoint = new Vector3(float.Parse(shootPtParts[0]), float.Parse(shootPtParts[1]), float.Parse(shootPtParts[2]));
+        Quaternion shootPtRot = new Quaternion(float.Parse(shootPtRotParts[0]), float.Parse(shootPtRotParts[1]), float.Parse(shootPtRotParts[2]), float.Parse(shootPtRotParts[3]));
         Vector3 hitPoint = new Vector3(float.Parse(hitPtParts[0]), float.Parse(hitPtParts[1]), float.Parse(hitPtParts[2]));
-        
-        GameClient.Instance.OnPlayerShoot(id, shootPoint, hitPoint, targetId);
+
+        GameClient.Instance.OnPlayerShoot(id, shootPoint, shootPtRot, hitPoint, targetId);
     }
 
     #endregion

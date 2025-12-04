@@ -62,6 +62,7 @@ public class PlayerShooting : MonoBehaviour
         // Send to server
         localPlayer.SendShootInfo(new ShootPacket(
             firePoint.transform.position,
+            firePoint.transform.rotation,
             hitPoint,
             targetId
         ));

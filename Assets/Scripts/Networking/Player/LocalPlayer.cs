@@ -4,13 +4,15 @@ using UnityEngine;
 public struct ShootPacket
 {
     public Vector3 shootPoint;
+    public Quaternion shootPtRot;
     public Vector3 hitPoint;
     public int targetID;
 
-    public ShootPacket(Vector3 shoot, Vector3 hit, int target = -1)
+    public ShootPacket(Vector3 shoot, Quaternion shootPtRot, Vector3 hit, int target = -1)
     {
         shootPoint = shoot;
         hitPoint = hit;
+        this.shootPtRot = shootPtRot;
         targetID = target;
     }
 }
@@ -59,11 +61,14 @@ public class LocalPlayer : MonoBehaviour
 
     public void SendShootInfo(ShootPacket shootPacket)
     {
+        // SHOOT:X,Y,Z:X,Y,Z,W:X,Y,Z:-1
         string shootPtStr = shootPacket.shootPoint.ToString().Replace(" ", "")
                             .Replace("(", "").Replace(")", "");
-        string hiPtStr = shootPacket.hitPoint.ToString().Replace(" ", "")
+        string hitPtStr = shootPacket.hitPoint.ToString().Replace(" ", "")
                             .Replace("(", "").Replace(")", "");
-        string msg = $"SHOOT:{shootPtStr}:{hiPtStr}:{shootPacket.targetID}";
+        string shootPtRot = shootPacket.shootPtRot.ToString().Replace(" ", "")
+                            .Replace("(", "").Replace(")", "");
+        string msg = $"SHOOT:{shootPtStr}:{shootPtRot}:{hitPtStr}:{shootPacket.targetID}";
         Debug.Log($"Sending Shoot Message: {msg}");
         TcpClientManager.Instance.Send(msg);
     }

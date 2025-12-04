@@ -67,7 +67,7 @@ public class GameClient : MonoBehaviour
         localPlayers[id].characterController.UpdateAnimators(paramName, val);
     }
 
-    public void OnPlayerShoot(int id, Vector3 shootPt, Vector3 hitPt, int targetId)
+    public void OnPlayerShoot(int id, Vector3 shootPt, Quaternion shootPtRot, Vector3 hitPt, int targetId)
     {
         if (!players.ContainsKey(id)) return;
         // Ignore local movement
@@ -76,7 +76,7 @@ public class GameClient : MonoBehaviour
             GameManager.Instance.localPlayer.localID == id) return;
 
         // Show effects at correct positions
-        EffectsManager.Instance.SpawnMuzzleFlash(shootPt, Quaternion.identity);
+        EffectsManager.Instance.SpawnMuzzleFlash(shootPt, shootPtRot);
         EffectsManager.Instance.SpawnHitImpact(hitPt);
     }
 }
