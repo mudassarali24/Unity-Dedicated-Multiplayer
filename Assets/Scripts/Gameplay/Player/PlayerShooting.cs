@@ -9,6 +9,7 @@ public class PlayerShooting : MonoBehaviour
     public Transform firePoint;
     public GunfireController weaponShooter;
     public GameObject hitImpact;
+    public LayerMask shootingMask;
     private float nextFireTime;
 
     void Start()
@@ -33,9 +34,8 @@ public class PlayerShooting : MonoBehaviour
         RaycastHit hit;
         int targetId = -1;
         Vector3 hitPoint;
-        int mask = LayerMask.GetMask("Ground");
 
-        if (Physics.Raycast(ray, out hit, range, mask))
+        if (Physics.Raycast(ray, out hit, range, shootingMask))
         {
             hitPoint = hit.point;
 
@@ -48,8 +48,16 @@ public class PlayerShooting : MonoBehaviour
             Quaternion decalRot = Quaternion.LookRotation(-hit.normal, Vector3.up);
             GameObject decal = EffectsManager.Instance.SpawnHitImpact(hit.point);
             decal.transform.position = hit.point + hit.normal * 0.01f;
-            decal.transform.rotation =  decalRot;
+            decal.transform.rotation = decalRot;
             decal.transform.Rotate(-90f, 0f, 0f, Space.Self);
+
+            if (hit.transform.CompareTag("Player"))
+            {
+                Vector3 pos = hit.transform.position;
+                pos.y = -0.7f;
+                EffectsManager.Instance.SpawnPlayerHitEffect(pos);
+            }
+            // Debug.Log($"Hitting: {hit.transform.name}");
         }
         else
         {

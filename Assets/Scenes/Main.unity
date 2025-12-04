@@ -274,6 +274,63 @@ MonoBehaviour:
   poolerID: Muzzle_Pooler
   objectToPool: {fileID: 1336949550903370, guid: 4543ab5e3d405ec40a8d4e9aa5165030, type: 3}
   initAmount: 50
+--- !u!1001 &130616584
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 169921375723428018, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1507004043801461155, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
+      propertyPath: m_Name
+      value: ClownPlayer 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f25427baa043d094a9a7ee93a98509ab, type: 3}
 --- !u!1 &182863810
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,6 +742,53 @@ MonoBehaviour:
   poolerID: HitEffect_Pooler
   objectToPool: {fileID: 1370874438154576190, guid: c02083b1627cc40449e4e7c3ed1f2a65, type: 3}
   initAmount: 50
+--- !u!1 &465751657
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 465751658}
+  - component: {fileID: 465751659}
+  m_Layer: 0
+  m_Name: PlayerHitPooler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &465751658
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465751657}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 676335157}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &465751659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465751657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd43cc88cce64843a149aa1c96e8a6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poolerID: PlayerHit_Pooler
+  objectToPool: {fileID: 4515497926535975121, guid: bddb971e34eb14d48be30c7b922eb077, type: 3}
+  initAmount: 10
 --- !u!1 &676335156
 GameObject:
   m_ObjectHideFlags: 0
@@ -716,6 +820,7 @@ Transform:
   m_Children:
   - {fileID: 89108160}
   - {fileID: 436454575}
+  - {fileID: 465751658}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
@@ -1088,3 +1193,4 @@ SceneRoots:
   - {fileID: 982256412}
   - {fileID: 1030138646}
   - {fileID: 676335157}
+  - {fileID: 130616584}

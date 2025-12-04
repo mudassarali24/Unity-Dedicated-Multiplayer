@@ -62,14 +62,18 @@ public class LocalPlayer : MonoBehaviour
     public void SendShootInfo(ShootPacket shootPacket)
     {
         // SHOOT:X,Y,Z:X,Y,Z,W:X,Y,Z:-1
-        string shootPtStr = shootPacket.shootPoint.ToString().Replace(" ", "")
-                            .Replace("(", "").Replace(")", "");
-        string hitPtStr = shootPacket.hitPoint.ToString().Replace(" ", "")
-                            .Replace("(", "").Replace(")", "");
-        string shootPtRot = shootPacket.shootPtRot.ToString().Replace(" ", "")
-                            .Replace("(", "").Replace(")", "");
+        string shootPtStr = GetRawStr(shootPacket.shootPoint.ToString());
+        string shootPtRot = GetRawStr(shootPacket.shootPtRot.ToString());
+        string hitPtStr = GetRawStr(shootPacket.hitPoint.ToString());
         string msg = $"SHOOT:{shootPtStr}:{shootPtRot}:{hitPtStr}:{shootPacket.targetID}";
-        Debug.Log($"Sending Shoot Message: {msg}");
+        // Debug.Log($"Sending Shoot Message: {msg}");
         TcpClientManager.Instance.Send(msg);
+    }
+
+    private string GetRawStr(string msg)
+    {
+        string str = msg.Replace(" ", "")
+                            .Replace("(", "").Replace(")", "");
+        return str;
     }
 }

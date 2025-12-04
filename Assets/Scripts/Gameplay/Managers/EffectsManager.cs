@@ -4,6 +4,7 @@ public class EffectsManager : MonoBehaviour
 {
     private ObjectPooler muzzleFlashPooler;
     private ObjectPooler hitEffectPooler;
+    private ObjectPooler playerHitEffectPooler;
     public static EffectsManager Instance;
 
     void Awake()
@@ -20,9 +21,11 @@ public class EffectsManager : MonoBehaviour
             if (pooler.poolerID == "Muzzle_Pooler")
                 muzzleFlashPooler = pooler;
 
-            
             if (pooler.poolerID == "HitEffect_Pooler")
                 hitEffectPooler = pooler;
+
+            if (pooler.poolerID == "PlayerHit_Pooler")
+                playerHitEffectPooler = pooler;
         }
     }
 
@@ -37,5 +40,10 @@ public class EffectsManager : MonoBehaviour
         GameObject hitObject = hitEffectPooler.GetObject();
         hitObject.transform.position = pos;
         return hitObject;
+    }
+    public void SpawnPlayerHitEffect(Vector3 pos)
+    {
+        GameObject effect = playerHitEffectPooler.GetObject();
+        effect.transform.position = pos;
     }
 }

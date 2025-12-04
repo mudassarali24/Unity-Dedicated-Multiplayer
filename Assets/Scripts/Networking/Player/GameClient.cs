@@ -28,7 +28,6 @@ public class GameClient : MonoBehaviour
     {
         playerID = pID;
     }
-
     public void OnPlayerSpawn(int id, Vector3 pos, Vector3 rot)
     {
         if (players.ContainsKey(id)) return;
@@ -78,5 +77,12 @@ public class GameClient : MonoBehaviour
         // Show effects at correct positions
         EffectsManager.Instance.SpawnMuzzleFlash(shootPt, shootPtRot);
         EffectsManager.Instance.SpawnHitImpact(hitPt);
+
+        if (Vector3.Distance(GameManager.Instance.localPlayer.transform.position, hitPt) <= 2.5f)
+        {
+            Vector3 pos = GameManager.Instance.localPlayer.transform.position;
+            pos.y = -0.7f;
+            EffectsManager.Instance.SpawnPlayerHitEffect(pos);
+        }
     }
 }
