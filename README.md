@@ -1,3 +1,4 @@
+![License](https://img.shields.io/badge/License-EUL-blue)
 # Multiplayer Top-Down Shooter (Unity + Custom .NET Server)
 
 A fully custom-built multiplayer prototype created with **Unity (Client)** and a **self-written .NET dedicated server**.  
