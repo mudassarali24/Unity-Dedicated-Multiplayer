@@ -8,9 +8,11 @@ public class GameClient : MonoBehaviour
     [Header("References")]
     public GameObject localPlayerObj;
     public GameObject remotePlayerObj;
+    public GameObject enemyObj;
 
     public int playerID { get; private set; }
     public Dictionary<int, GameObject> players = new Dictionary<int, GameObject>();
+    public Dictionary<int, GameObject> enemies = new Dictionary<int, GameObject>();
     public Dictionary<int, LocalPlayer> localPlayers = new Dictionary<int, LocalPlayer>();
     public static GameClient Instance;
 
@@ -84,5 +86,28 @@ public class GameClient : MonoBehaviour
             pos.y = -0.7f;
             EffectsManager.Instance.SpawnPlayerHitEffect(pos);
         }
+    }
+
+    public void OnEnemySpawn(int id, Vector3 pos, float rotY, int targetPlayerID, EnemyState currState)
+    {
+        if (enemies.ContainsKey(id)) return;
+        GameObject objectToSpawn = enemyObj;
+        GameObject obj = Instantiate(objectToSpawn, pos, Quaternion.Euler(0f, rotY, 0f));
+        NetworkEnemy enemy = obj.GetComponent<NetworkEnemy>();
+        enemy.enemyId = id;
+        enemy.targetPlayerID = targetPlayerID;
+        enemy.currentState = currState;
+        enemies.Add(id, obj);
+
+        Debug.Log($"Spawned Enemy: {id}");
+    }
+
+    public void OnEnemyUpdate(int id, int targetPlayerID, EnemyState currState)
+    {
+        if (!enemies.ContainsKey(id)) return;
+        GameObject obj = enemies[id];
+        NetworkEnemy enemy = obj.GetComponent<NetworkEnemy>();
+        enemy.targetPlayerID = targetPlayerID;
+        enemy.currentState = currState;
     }
 }

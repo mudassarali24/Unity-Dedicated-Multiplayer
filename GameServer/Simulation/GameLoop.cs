@@ -36,6 +36,7 @@ namespace GameServer.Simulation
 
             BroadcastPositions();
             BroadcastAnimations();
+            BroadcastEnemies();
         }
 
         public void Stop() => isRunning = false;
@@ -67,6 +68,20 @@ namespace GameServer.Simulation
                     string msg = $"UPD_ANIM:{player.Id}:{akv.Key}:{akv.Value}";
                     TcpServer.Broadcast(msg);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Broadcast enemies
+        /// </summary>
+        private void BroadcastEnemies()
+        {
+            foreach (var kv in TcpServer.enemies)
+            {
+                var enemy = kv.Value; 
+                enemy.UpdateState();
+                string msg = $"UPD_ENEMY:{enemy.enemyId}:{enemy.targetPlayerId}:{enemy.currentState.ToString()}";
+                TcpServer.Broadcast(msg);
             }
         }
 

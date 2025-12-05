@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,6 +26,12 @@ public static class GameClientMessageHandler
                 break;
             case "UPD_SHOOT":
                 HandleShoot(parts);
+                break;
+            case "SPAWN_ENEMY":
+                HandleEnemySpawn(parts);
+                break;
+            case "UPD_ENEMY":
+                HandleEnemyUpdate(parts);
                 break;
         }
     }
@@ -102,6 +109,33 @@ public static class GameClientMessageHandler
         Vector3 hitPoint = new Vector3(float.Parse(hitPtParts[0]), float.Parse(hitPtParts[1]), float.Parse(hitPtParts[2]));
 
         GameClient.Instance.OnPlayerShoot(id, shootPoint, shootPtRot, hitPoint, targetId);
+    }
+
+    private static void HandleEnemySpawn(string[] parts)
+    {
+        if (parts[0] != "SPAWN_ENEMY") return;
+        int id = int.Parse(parts[1]);
+        string[] posParts = parts[2].Split(',');
+
+        // Example: SPAWN_ENEMY:1:x,y,z:2:3:CHASING
+        Vector3 pos = new Vector3(float.Parse(posParts[0]), float.Parse(posParts[1]), float.Parse(posParts[2]));
+        float rotY = float.Parse(parts[3]);
+        int targetPID = int.Parse(parts[4]);
+        EnemyState state = (EnemyState)Enum.Parse(typeof(EnemyState), parts[5]);
+
+        // Update enemy here
+        GameClient.Instance.OnEnemySpawn(id, pos, rotY, targetPID, state);
+    }
+
+    private static void HandleEnemyUpdate(string[] parts)
+    {
+        if (parts[0] != "UPD_ENEMY") return;
+        int id = int.Parse(parts[1]);
+        int targetPID = int.Parse(parts[2]);
+        EnemyState state = (EnemyState)Enum.Parse(typeof(EnemyState), parts[3]);
+
+        // Update enemy here
+        GameClient.Instance.OnEnemyUpdate(id, targetPID, state);
     }
 
     #endregion

@@ -12,6 +12,15 @@ namespace GameServer.Utils
             this.y = y;
             this.z = z;
         }
+
+        public static float Distance(Vector3 a, Vector3 b)
+        {
+            float deltaX = b.x - a.x;
+            float deltaY = b.y - a.y;
+            float deltaZ = b.z - a.z;
+            float dist = (float)Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+            return dist;
+        }
     }
 
     public struct ShootPacket

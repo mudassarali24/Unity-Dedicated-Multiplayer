@@ -13,7 +13,11 @@ namespace GameServer.Networking
         private TcpListener listener;
         private Thread listenerThread;
         public ConcurrentDictionary<int, Player> players = new ConcurrentDictionary<int, Player>();
+        public ConcurrentDictionary<int, Enemy> enemies = new ConcurrentDictionary<int, Enemy>();
+
+        private const int INIT_ENEMIES_COUNT = 5;
         private int playerCounter = 0;
+        private int enemyCounter = 0;
         private Random rng = new Random();
 
         public void Start(int port)
@@ -25,6 +29,8 @@ namespace GameServer.Networking
 
             listenerThread = new Thread(ListenForClients);
             listenerThread.Start();
+
+            SpawnEnemies();
         }
         private void ListenForClients()
         {
@@ -43,6 +49,8 @@ namespace GameServer.Networking
                 BroadcastSpawn(id, pos, rot);
                 // Send existing players to this new connected player
                 SendExistingPlayersTo(id);
+                // Send existing enemies to this new connected player
+                SendExistingEnemiesTo(id);
 
                 Thread clientThread = new Thread(() => HandleClient(id, client));
                 clientThread.Start();
@@ -62,7 +70,7 @@ namespace GameServer.Networking
                     if (bytes <= 0) break; // stream disturbed
 
                     string message = System.Text.Encoding.UTF8.GetString(buffer, 0, bytes);
-                    Console.WriteLine($"(TCP) Player {id}: {message.Trim()}");
+                    // Console.WriteLine($"(TCP) Player {id}: {message.Trim()}");
 
                     HandleMessage(id, message);
                 }
@@ -88,6 +96,15 @@ namespace GameServer.Networking
                     break;
                 case "SHOOT":
                     HandleShoot(id, parts);
+                    break;
+                case "ENEMY_POS":
+                    HandleEnemyPos(id, parts);
+                    break;
+                case "ENEMY_ROT":
+                    HandleEnemyRot(id, parts);
+                    break;
+                case "ENEMY_TARGET_PLAYER":
+                    HandleEnemyTargetPID(id, parts);
                     break;
             }
         }
@@ -227,12 +244,72 @@ namespace GameServer.Networking
                 string msg = $"UPD_SHOOT:{id}:{shootPoint.x},{shootPoint.y},{shootPoint.z}:{shootPtRot.x},{shootPtRot.y},{shootPtRot.z},{shootPtRot.w}:{hitPoint.x},{hitPoint.y},{hitPoint.z}:{targetId}";
                 Broadcast(msg);
             }
-
+        }
+        private void HandleEnemyPos(int id, string[] parts)
+        {
+            if (parts[0] != "ENEMY_POS") return;
+            Vector3 pos = new Vector3();
+            if (float.TryParse(parts[1], out pos.x)
+                && float.TryParse(parts[2], out pos.y)
+                && float.TryParse(parts[3], out pos.z))
+            {
+                if (enemies.TryGetValue(id, out Enemy enemy))
+                {
+                    enemy.currentPos = pos;
+                }
+            }
+        }
+        private void HandleEnemyRot(int id, string[] parts)
+        {
+            if (parts[0] != "ENEMY_ROT") return;
+            if (float.TryParse(parts[1], out float rotY))
+            {
+                if (enemies.TryGetValue(id, out Enemy enemy))
+                {
+                    enemy.currentRotY = rotY;
+                }
+            }
+        }
+        private void HandleEnemyTargetPID(int id, string[] parts)
+        {
+            if (parts[0] != "ENEMY_TARGET_PLAYER") return;
+            if (int.TryParse(parts[1], out int enemyID)
+                && int.TryParse(parts[2], out int pID))
+            {
+                if (enemies.TryGetValue(enemyID, out Enemy enemy))
+                {
+                    Console.WriteLine($"Updating target id of enemy {enemyID} to {pID}!");
+                    enemy.targetPlayerId = pID;
+                }
+            }
         }
 
         #endregion
 
         #region UTILS
+
+        private void SpawnEnemies()
+        {
+            for (int i = 0; i < INIT_ENEMIES_COUNT; i++)
+            {
+                int id = ++enemyCounter;
+                var spawnPos = GetRandomSpawnPosEnemy();
+                Vector3 pos = new Vector3(spawnPos.x, spawnPos.y, spawnPos.z);
+                var data = new Enemy(id, pos, 0);
+
+                enemies.TryAdd(id, data);
+                Console.WriteLine($"(TCP) Enemy {id} spawned!");
+
+                SendEnemySpawned(data);
+            }
+        }
+
+        private void SendEnemySpawned(Enemy enemy)
+        {
+            // Example: SPAWN_ENEMY:1:x,y,z:2:3:CHASING
+            string msg = $"SPAWN_ENEMY:{enemy.enemyId}:{enemy.currentPos.x},{enemy.currentPos.y},{enemy.currentPos.z}:{enemy.currentRotY}:{enemy.targetPlayerId}:{enemy.currentState.ToString()}";
+            Broadcast(msg);
+        }
 
         private void AssignIDToPlayer(int newPID)
         {
@@ -250,12 +327,29 @@ namespace GameServer.Networking
 
             return (x, y, z);
         }
+        private (float x, float y, float z) GetRandomSpawnPosEnemy()
+        {
+            float x = (float)(rng.NextDouble() * 40 - 30);
+            float z = (float)(rng.NextDouble() * 40 - 30);
+            float y = 0f;
+
+            return (x, y, z);
+        }
 
         private void SendExistingPlayersTo(int newPID)
         {
             foreach (var player in players.Values)
             {
                 string msg = $"SPAWN:{player.Id}:{player.pos.x}:{player.pos.y}:{player.pos.z}:{player.rot.x}:{player.rot.y}:{player.rot.z}";
+                BroadcastToClient(newPID, msg);
+            }
+        }
+        private void SendExistingEnemiesTo(int newPID)
+        {
+            foreach (var enemy in enemies.Values)
+            {
+                // Example: SPAWN_ENEMY:1:x,y,z:2:3:CHASING
+                string msg = $"SPAWN_ENEMY:{enemy.enemyId}:{enemy.currentPos.x},{enemy.currentPos.y},{enemy.currentPos.z}:{enemy.currentRotY}:{enemy.targetPlayerId}:{enemy.currentState.ToString()}";
                 BroadcastToClient(newPID, msg);
             }
         }
